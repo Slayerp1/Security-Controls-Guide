@@ -1,0 +1,73 @@
+# Comparison Table — All Control Types
+
+---
+
+## Preventive
+
+**Primary Purpose:** Prevent unwanted action
+
+**Stops Action?** Yes
+
+**Records Events?** No
+
+**Instructs Users?** No
+
+**Repairs/Restores?** No
+
+**Lab Example:** Restrict share access (remove Users permissions)
+
+**When to use:** When you need to block unauthorized access before it happens.
+
+---
+
+## Detective
+
+**Primary Purpose:** Record/log events
+
+**Stops Action?** No
+
+**Records Events?** Yes
+
+**Instructs Users?** No
+
+**Repairs/Restores?** No
+
+**Lab Example:** Audit folder deletion (Event ID 4660/4663)
+
+**When to use:** When you need evidence of what happened for investigations or compliance.
+
+---
+
+## Directive
+
+**Primary Purpose:** Guide toward compliant behavior
+
+**Stops Action?** No
+
+**Records Events?** No
+
+**Instructs Users?** Yes
+
+**Repairs/Restores?** No
+
+**Lab Example:** Login legal notice banner
+
+**When to use:** When you need users to acknowledge policies before accessing systems.
+
+---
+
+## Corrective
+
+**Primary Purpose:** Detect & restore secure state
+
+**Stops Action?** No
+
+**Records Events?** Sometimes
+
+**Instructs Users?** No
+
+**Repairs/Restores?** Yes
+
+**Lab Example:** File hash check + auto-restore + BSOD
+
+**When to use:** When you need automatic recovery from unauthorized changes or system failures.

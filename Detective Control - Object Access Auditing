@@ -1,0 +1,93 @@
+# Detective Control — Object Access Auditing
+
+---
+
+## What Is a Detective Control?
+
+Records/logs events for later review. Creates a **record of events and activities**.
+
+---
+
+## Objective
+
+Enable auditing to log file/folder deletions.
+
+---
+
+## Technique
+
+Enable system-wide Audit object access policy + Set SACL (Auditing entries) on LABFILES folder.
+
+---
+
+## Step-by-Step
+
+**Step 1 — Delete empty folder (baseline test):**
+```
+Delete a folder
+Result: No log record (default state — auditing not enabled)
+```
+This shows that without auditing, deletions go untracked.
+
+---
+
+**Step 2 — Enable audit policy:**
+```
+Local Security Policy → Audit object access → Enable Success and Failure
+```
+What it does: Tells Windows to start recording object access events system-wide.
+When to do this: When you need to track who accesses, modifies, or deletes files.
+
+---
+
+**Step 3 — Set SACL on the LABFILES folder:**
+```
+LABFILES folder → Properties → Security → Advanced → Auditing tab
+```
+What it does: Tells Windows specifically which actions to log on this folder.
+
+---
+
+**Step 4 — Add auditing entry:**
+```
+Add "Everyone" → Advanced permissions → Check "Delete subfolders and files" + "Delete"
+Replace child auditing entries
+```
+What it does: Logs every delete action by any user on this folder and subfolders.
+When to do this: When you need to track deletions for forensics or compliance.
+
+---
+
+**Step 5 — Test by deleting pcaps folder:**
+```
+Delete pcaps folder → Check Event Viewer (Security log)
+```
+
+---
+
+**Step 6 — Check Event Viewer:**
+```
+Event ID 4660: "An object was deleted"
+Event ID 4663: Details with Object Name: C:\LABFILES\pcaps
+```
+What these mean:
+- **4660** = Confirms something was deleted
+- **4663** = Shows exactly what was deleted and the file path
+
+When to check: After any suspicious activity or during security investigations.
+
+---
+
+## Key Lesson
+
+Requires **both** system policy + per-object SACL. Use for forensics and compliance.
+
+---
+
+## When to Use This Control
+
+- Tracking file deletions in sensitive folders
+- Meeting compliance audit requirements
+- Investigating security incidents
+- Monitoring who accesses confidential data
+- Building forensic evidence trails

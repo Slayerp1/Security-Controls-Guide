@@ -1,0 +1,91 @@
+# Preventive Control — File Share Permissions
+
+---
+
+## What Is a Preventive Control?
+
+Stops unwanted actions **before** they occur.
+Category: **Technical** preventive control
+
+---
+
+## Objective
+
+Restrict access to `\\DC10\TOOLS` share so only admins are allowed.
+
+---
+
+## Technique
+
+Remove inherited Domain Users permissions. Rely on explicit Allow for Domain Admins & LocalAdmin.
+
+---
+
+## Step-by-Step
+
+**Step 1 — Test as non-admin user (Sam):**
+```
+Try accessing \\DC10\TOOLS as Sam
+Result: Could access share (initial misconfiguration)
+```
+This confirms the problem — unauthorized users have access.
+
+---
+
+**Step 2 — Open Share Permissions on DC10 (as Administrator):**
+```
+Server Manager → Shares → TOOLS Properties → Permissions → Customize permissions
+```
+When to do this: When you need to restrict who can access a shared folder.
+
+---
+
+**Step 3 — Disable inheritance:**
+```
+Disable inheritance → Convert inherited permissions
+```
+What it does: Stops the folder from automatically inheriting parent permissions.
+When to do this: When you want full manual control over who has access.
+
+---
+
+**Step 4 — Remove broad access groups:**
+```
+Remove "Users (structureality\Users)" entries (twice)
+Remove "Everyone"
+```
+What it does: Removes default access that lets all domain users in.
+When to do this: When only specific users/groups should have access.
+
+---
+
+**Step 5 — Re-test as Sam (non-admin):**
+```
+Try accessing \\DC10\TOOLS as Sam
+Result: Access Denied (success!)
+```
+This confirms the preventive control is working.
+
+---
+
+**Step 6 — Test as Jaime (LocalAdmin):**
+```
+Try accessing \\DC10\TOOLS as Jaime
+Result: Access still allowed (authorized)
+```
+This confirms authorized users still have access.
+
+---
+
+## Key Lesson
+
+Use **implicit deny** (remove unnecessary groups) — avoid explicit Deny on broad groups like Users/Everyone.
+
+---
+
+## When to Use This Control
+
+- Restricting shared folders to specific teams
+- Protecting sensitive files from unauthorized access
+- Implementing least-privilege access
+- Meeting compliance requirements for data protection

@@ -1,0 +1,79 @@
+# Directive Control — Login Warning Banner
+
+---
+
+## What Is a Directive Control?
+
+Guides/instructs users toward **compliant behavior**. Goal is **compliance** — awareness, consent, and behavioral guidance.
+
+---
+
+## Objective
+
+Display a legal notice / acceptable use policy at login.
+
+---
+
+## Technique
+
+Set registry keys via PowerShell.
+
+---
+
+## Step-by-Step
+
+**Step 1 — Open PowerShell as Admin (as Jaime):**
+```
+Right-click PowerShell → Run as Administrator
+```
+
+---
+
+**Step 2 — Set the banner text:**
+```powershell
+$BannerText = "This computer system is the property of Structureality Inc. Unauthorized access is prohibited. All activity is monitored."
+```
+What it does: Stores the warning message in a variable.
+
+---
+
+**Step 3 — Set the banner caption (title):**
+```powershell
+New-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System" -Name "LegalNoticeCaption" -Value "WARNING" -Force
+```
+What it does: Sets the title of the login banner popup.
+When to do this: When you want users to see a warning title before logging in.
+
+---
+
+**Step 4 — Set the banner message (body):**
+```powershell
+New-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System" -Name "LegalNoticeText" -Value $BannerText -Force
+```
+What it does: Sets the full warning message displayed at login.
+When to do this: When you need legal notice, acceptable use policy, or consent acknowledgment.
+
+---
+
+**Step 5 — Test it:**
+```
+Sign out → Sign back in → Banner appears before login prompt
+Click OK to proceed
+```
+This confirms the directive control is working.
+
+---
+
+## Key Lesson
+
+Establishes **legal notice** — always consult legal team in production. This creates documented consent that users acknowledge the monitoring policy.
+
+---
+
+## When to Use This Control
+
+- Displaying acceptable use policies
+- Legal compliance (users must acknowledge before access)
+- Warning unauthorized users that activity is monitored
+- Meeting regulatory requirements (HIPAA, PCI-DSS, etc.)
+- Creating legal basis for monitoring and enforcement

@@ -1,0 +1,132 @@
+# Corrective Control — File Integrity Monitoring & Auto-Restore
+
+---
+
+## What Is a Corrective Control?
+
+Detects issues and **actively restores** a secure state. Has dual purposes: address unwanted changes AND return the system to normal.
+
+---
+
+## Objective
+
+Detect and restore unwanted file changes + demo native Windows corrective behavior (BSOD).
+
+---
+
+## Technique
+
+Hash-based integrity check + auto-restore script. BSOD as native corrective response.
+
+---
+
+## Part A — Native Windows Corrective Control (BSOD)
+
+**Step 1 — Trigger a crash:**
+```
+Run notmyfault64.exe (from SYSINTERNALS) → Select "Code overwrite" → Crash
+```
+What it does: Forces a system crash (Blue Screen of Death).
+
+---
+
+**Step 2 — System auto-recovers:**
+```
+System crashes (BSOD) → Reboots automatically
+```
+What it does: Windows detects the unstable state and reboots to protect stability.
+When this happens: Any time Windows detects a critical system error.
+
+This is a **built-in corrective control** — Windows automatically restores itself.
+
+---
+
+## Part B — Custom File Corrective Control
+
+**Step 1 — Create a baseline file:**
+```powershell
+"This is important" | Set-Content notes.txt
+```
+What it does: Creates a known-good file with specific content.
+
+---
+
+**Step 2 — Store the hash (fingerprint):**
+```powershell
+Get-FileHash ./notes.txt -Algorithm SHA256 | Select-Object -ExpandProperty Hash | Set-Content ./hash.txt
+```
+What it does: Calculates a unique fingerprint (SHA256 hash) of the file and saves it.
+When to do this: After creating or verifying a file is in its correct state.
+
+---
+
+**Step 3 — Simulate unauthorized change:**
+```powershell
+echo blah >> notes.txt
+```
+What it does: Simulates someone tampering with the file.
+
+---
+
+**Step 4 — Detect change manually:**
+```powershell
+Get-FileHash ./notes.txt -Algorithm SHA256
+# Compare with stored hash — they won't match
+```
+What it does: Shows the hash has changed, proving the file was modified.
+
+---
+
+**Step 5 — Create the hash calculation script (calchash.ps1):**
+```powershell
+Get-FileHash ./notes.txt -Algorithm SHA256 | Select-Object -ExpandProperty Hash | Set-Content ./hash.txt
+```
+What it does: Generates/updates the baseline hash.
+When to use: After restoring a file to its correct state.
+
+---
+
+**Step 6 — Create the check & auto-restore script (check.ps1):**
+```powershell
+if((Get-FileHash ./notes.txt -Algorithm SHA256).Hash -ne (Get-Content ./hash.txt))
+{
+    "This is important" | Set-Content ./notes.txt
+    Write-Host "The file has changed. Corrective action initiated."
+}
+else
+{
+    Write-Host "The file is correct. No corrective action needed."
+}
+```
+What it does: Compares current hash to stored hash. If different, auto-restores the file.
+When to use: Run on a schedule (Task Scheduler) or at boot for continuous protection.
+
+---
+
+**Step 7 — Test it:**
+```
+Change the file → Run ./check.ps1 → File auto-restores
+```
+This confirms the corrective control is working.
+
+---
+
+## Detection Method
+
+**Hashing** — SHA256 fingerprint comparison.
+
+---
+
+## Key Lesson
+
+Similar to SigVerif tool — automate via Task Scheduler for boot/periodic checks.
+
+---
+
+## When to Use This Control
+
+- Protecting critical configuration files from tampering
+- Detecting unauthorized changes to system files
+- Auto-restoring files after malware modification
+- Meeting compliance requirements for file integrity monitoring (FIM)
+- Protecting scripts, policies, or sensitive documents
